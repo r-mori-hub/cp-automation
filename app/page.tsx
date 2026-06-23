@@ -47,13 +47,18 @@ export default function Home() {
     <main style={{ padding: 24, fontFamily: "sans-serif" }}>
       <h1>PDF要約アプリ</h1>
 
+      {/* ボタンの配置の修正(森) */}
       <div style={{ display: "flex", gap: 12 }}>
         <button onClick={run} disabled={loading}>
           {loading ? "実行中..." : "PDF要約を実行"}
         </button>
 
-        <button onClick={() => router.push("/mail_list")}>
-          メール確認画面
+        <button onClick={() => router.push("/mail_unsent")}>
+          未送信画面
+        </button>
+
+        <button onClick={() => router.push("/mail_sent")}>
+          送信済み画面
         </button>
       </div>
 

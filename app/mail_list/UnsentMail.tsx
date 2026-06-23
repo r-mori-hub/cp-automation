@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-export default function MailItem({ item }: { item: any }) {
+export default function UnsentMail({ item }: { item: any }) {
   const [summary, setSummary] = useState(item.ai_summary);
 
   const handleUpdate = async () => {
@@ -15,10 +15,10 @@ export default function MailItem({ item }: { item: any }) {
     if (res.ok) {
       alert("更新しました");
     } else {
-  const text = await res.text();
-  console.log(text);
-  alert("更新失敗: " + text);
-}
+      const text = await res.text();
+      console.log(text);
+      alert("更新失敗: " + text);
+    }
   };
 
   const handleSend = async () => {
@@ -30,6 +30,7 @@ export default function MailItem({ item }: { item: any }) {
 
     if (res.ok) {
       alert("送信しました");
+      window.location.reload();
     } else {
       alert("送信失敗");
     }
@@ -38,17 +39,18 @@ export default function MailItem({ item }: { item: any }) {
   return (
     <div style={{ border: "1px solid #ddd", padding: 16, marginTop: 16 }}>
       <pre style={{ whiteSpace: "pre-wrap" }}>{item.mailaddress}</pre>
+
       <textarea
         value={summary}
         onChange={(e) => setSummary(e.target.value)}
         rows={20}
         style={{ width: "100%" }}
       />
+
       <button onClick={handleUpdate}>内容を更新</button>
-      <button onClick={handleSend} style={{ marginLeft: 8 }}>メール送信</button>
+      <button onClick={handleSend} style={{ marginLeft: 8 }}>
+        メール送信
+      </button>
     </div>
   );
 }
-
-
-

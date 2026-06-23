@@ -1,4 +1,11 @@
 node_modules/
 dist/
 .env
+.env.local
 .clasp.json
+
+.next/
+.env.local
+node_modules/
+
+commit_memo.md

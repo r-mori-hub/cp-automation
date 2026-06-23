@@ -16,6 +16,10 @@ const nowyear = getYearMonthFolder();
   .from("origin_pdf_save")
   .list(nowyear);
 
+console.log("folder =", nowyear);
+console.log("files =", files);
+console.log("listError =", listError);
+
 if (listError) throw listError;
 
 const pdfFiles = (files ?? []).filter((file: any) =>
@@ -24,11 +28,11 @@ const pdfFiles = (files ?? []).filter((file: any) =>
 console.log(`downloadに入りました。i=${i}`);
 
 const pdfFile = pdfFiles[i];
-console.log(`pdfファイルの名前は=${pdfFile.name}`);
 
 if (!pdfFile) {
   throw new Error("PDFファイルがありません");
 }
+console.log(`pdfファイルの名前は=${pdfFile.name}`);
 
 const { data: pdfData, error: downloadError } = await supabase.storage
   .from("origin_pdf_save")
