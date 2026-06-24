@@ -14,6 +14,7 @@ import { sentReportMail } from "../../../library/sent_gmail/sent_gmail";
 export async function GET(request: Request) {
 
   try {
+      const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL || "", process.env.SUPABASE_SERVICE_ROLE_KEY || "");
 
       const { searchParams } = new URL(request.url);
       const i = Number(
@@ -22,7 +23,28 @@ export async function GET(request: Request) {
 
 
      const {fileName,origin} =await download_supabase(i); // supabaseにあるstorageからデータを取得する
-    //  const pdfBlob = await origin.blob();
+    
+    // 追加: AI要約前に同じPDFが既に登録済みか確認
+    // pdf_path が既に reports に存在する場合、OpenAI APIを呼ばずにスキップする
+    const { data: existingReport, error: existingError } = await supabase
+      .from("reports")
+      .select("id")
+      .eq("pdf_path", fileName)
+      .limit(1)
+
+    if (existingError) {
+      throw existingError;
+    }
+
+    if (existingReport) {
+      logger.info(`PDF ${fileName} は既に要約済みです`);
+
+      return NextResponse.json({
+        success: true,
+        skipped: true,
+        message: "既に要約済みのPDFのため処理をスキップしました",
+      });
+    }
      const summary = await summarizePdf(fileName,origin);
      console.log("summarizepdfまでは終わった")
     

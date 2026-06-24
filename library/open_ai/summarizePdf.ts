@@ -9,7 +9,6 @@ const client = new OpenAI({
 });
 
 
-
 export async function summarizePdf(fileName:string ,origin: Blob) {
   try {
 
@@ -60,7 +59,7 @@ const month = decodedName.match(
     const buffer = Buffer.from(arrayBuffer);
 
     //const pdfPath = path.join("/tmp", "origin.pdf");//vercel環境ではこっち
-    //localhost開発では以下のパスに保存する
+    //localhost開発では以下のパスにダウンロードしたpdf(origin.pdf)保存する
     const pdfPath = path.join(process.cwd(), "tmp", "origin.pdf");
 
 
@@ -70,6 +69,8 @@ const month = decodedName.match(
       file: fs.createReadStream(pdfPath),
       purpose: "user_data",
     });
+
+    
 
     if (!file.id) {
       throw new Error("アップロード失敗");

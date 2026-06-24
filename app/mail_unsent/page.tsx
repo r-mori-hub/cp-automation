@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 export default async function MailUnsentPage() {
   const { data, error } = await supabase
     .from("reports")
-    .select("id, ai_summary, mailaddress, sent")
+    .select("id, ai_summary, mailaddress, sent, companyname, report_month")
     // 追加: 未送信メールだけ取得
     .eq("sent", false);
 

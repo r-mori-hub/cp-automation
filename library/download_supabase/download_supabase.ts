@@ -16,9 +16,6 @@ const nowyear = getYearMonthFolder();
   .from("origin_pdf_save")
   .list(nowyear);
 
-console.log("folder =", nowyear);
-console.log("files =", files);
-console.log("listError =", listError);
 
 if (listError) throw listError;
 

@@ -1,6 +1,7 @@
 import nodemailer from "nodemailer";
 import { createClient } from "@supabase/supabase-js";
 import { Buffer } from "buffer";
+import { getReportPdf } from "../report_pdf/reportPdfService";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -22,16 +23,7 @@ export async function sentReportMail(id: number) {
     );
   }
 
-  const { data: pdfFile, error: pdfError } =
-    await supabase.storage
-      .from("origin_pdf_save")
-      .download(`2026_6/${data.pdf_path}`)
-
-  if (pdfError || !pdfFile) {
-    throw new Error(
-      "PDF取得失敗: " + pdfError?.message
-    );
-  }
+  const { pdfFile } = await getReportPdf(id);
 
   const pdfBuffer = Buffer.from(
     await pdfFile.arrayBuffer()
@@ -60,10 +52,15 @@ export async function sentReportMail(id: number) {
     ],
   });
 
+  //mail送信ができたらsentをtrueにする処理(森)
   const { error: updateError } = await supabase
     .from("reports")
     .update({ sent: true })
     .eq("id", id);
+  
+  if (updateError) {
+    throw new Error(
+      "sent更新失敗: " + updateError.message
+    );
+  }
 }
-
-//このファイルでsent変数の更新を行う
