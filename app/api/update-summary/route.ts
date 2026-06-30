@@ -7,14 +7,16 @@ const supabase = createClient(
 );
 
 export async function POST(req: NextRequest) {
-  const { id, ai_summary } = await req.json();
+  const { id, ai_summary, subject_mail, mailaddress } = await req.json();
 
   console.log("受け取ったid:", id);
   console.log("受け取ったai_summary:", ai_summary);
+  console.log("受け取ったsubject_mail:", subject_mail);
+  console.log("受け取ったmailaddress:", mailaddress);
 
   const { error } = await supabase
     .from("reports")
-    .update({ ai_summary })
+    .update({ ai_summary, subject_mail, mailaddress })
     .eq("id", id);
 
   console.log("Supabase error:", error);

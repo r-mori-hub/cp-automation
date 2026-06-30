@@ -36,7 +36,7 @@ export async function GET(request: Request) {
       throw existingError;
     }
 
-    if (existingReport) {
+    if (existingReport && existingReport.length > 0) {
       logger.info(`PDF ${fileName} は既に要約済みです`);
 
       return NextResponse.json({
@@ -45,6 +45,7 @@ export async function GET(request: Request) {
         message: "既に要約済みのPDFのため処理をスキップしました",
       });
     }
+    
      const summary = await summarizePdf(fileName,origin);
      console.log("summarizepdfまでは終わった")
     

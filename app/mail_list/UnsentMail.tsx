@@ -4,6 +4,8 @@ import { useState } from "react";
 
 export default function UnsentMail({ item }: { item: any }) {
   const [summary, setSummary] = useState(item.ai_summary);
+  const [subject, setSubject] = useState(item.subject_mail ?? ""); // 件名の初期値を設定
+  const [mailaddress, setMailaddress] = useState(item.mailaddress ?? ""); // 送信先メールアドレスの初期値を設定
 
   const handleUpdate = async () => {
 
@@ -15,7 +17,12 @@ export default function UnsentMail({ item }: { item: any }) {
     const res = await fetch("/api/update-summary", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: item.id, ai_summary: summary }),
+      body: JSON.stringify({
+      id: item.id,
+      ai_summary: summary,
+      subject_mail: subject,
+      mailaddress: mailaddress,
+      }),
     });
 
     if (res.ok) {
@@ -55,9 +62,30 @@ export default function UnsentMail({ item }: { item: any }) {
       <p>
         <strong>対象月:</strong> {item.report_month}
       </p>
-      <p>
-        <strong>送信先:</strong> {item.mailaddress}
-      </p>
+
+      {/* 件名の入力欄 */}
+      <div style={{ marginBottom: 12 }}>
+        <label>
+          <strong>件名:</strong>
+        </label>
+        <input
+          value={subject}
+          onChange={(e) => setSubject(e.target.value)}
+          style={{ width: "100%", padding: 8, marginTop: 4 }}
+        />
+      </div>
+
+      {/* 送信先メールアドレスの入力欄 */}
+      <div style={{ marginBottom: 12 }}>
+        <label>
+          <strong>送信先:</strong>
+        </label>
+        <input
+          value={mailaddress}
+          onChange={(e) => setMailaddress(e.target.value)}
+          style={{ width: "100%", padding: 8, marginTop: 4 }}
+        />
+      </div>
 
       <textarea
         value={summary}
