@@ -4,24 +4,26 @@ import { useState } from "react";
 
 export default function UnsentMail({ item }: { item: any }) {
   const [summary, setSummary] = useState(item.ai_summary);
-  const [subject, setSubject] = useState(item.subject_mail ?? ""); // 件名の初期値を設定
-  const [mailaddress, setMailaddress] = useState(item.mailaddress ?? ""); // 送信先メールアドレスの初期値を設定
+  const [subject, setSubject] = useState(item.subject_mail ?? "");
+  const [mailaddress, setMailaddress] = useState(item.mailaddress ?? "");
 
   const handleUpdate = async () => {
+    const confirmUpdate = window.confirm(
+      `${item.companyname}様の${item.report_month}分のレポートを更新します。よろしいですか？`
+    );
 
-    // 誤更新防止の確認ポップアップ(森)
-    const confirmUpdate = window.confirm(`${item.companyname}様の${item.report_month}分のレポートを更新します。よろしいですか？`);
     if (!confirmUpdate) {
-      return; // ユーザーがキャンセルした場合、更新処理を中止
+      return;
     }
+
     const res = await fetch("/api/update-summary", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-      id: item.id,
-      ai_summary: summary,
-      subject_mail: subject,
-      mailaddress: mailaddress,
+        id: item.id,
+        ai_summary: summary,
+        subject_mail: subject,
+        mailaddress: mailaddress,
       }),
     });
 
@@ -35,13 +37,14 @@ export default function UnsentMail({ item }: { item: any }) {
   };
 
   const handleSend = async () => {
+    const confirmSend = window.confirm(
+      `${item.companyname}様の${item.report_month}分のメールを ${mailaddress} に送信します。よろしいですか？`
+    );
 
-    // 誤送信防止の確認ポップアップ(森)
-    const confirmSend = window.confirm(`${item.companyname}様の${item.report_month}分のメールを ${item.mailaddress} に送信します。よろしいですか？`);
     if (!confirmSend) {
-      return; // ユーザーがキャンセルした場合、送信処理を中止
+      return;
     }
-    
+
     const res = await fetch("/api/send-mail", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -57,33 +60,39 @@ export default function UnsentMail({ item }: { item: any }) {
   };
 
   return (
-    <div style={{border: "1px solid #ddd", borderRadius: 12, padding: 20, marginTop: 20, }}>
+    <div
+      style={{
+        border: "1px solid #ddd",
+        borderRadius: 12,
+        padding: 20,
+        marginTop: 20,
+      }}
+    >
       <h3>{item.companyname}</h3>
+
       <p>
         <strong>対象月:</strong> {item.report_month}
       </p>
 
-      {/* 件名の入力欄 */}
       <div style={{ marginBottom: 12 }}>
         <label>
-          <strong>件名:</strong>
+          <strong>件名</strong>
         </label>
         <input
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
-          style={{ width: "100%", padding: 8, marginTop: 4 }}
+          style={{ width: "100%", padding: 8 }}
         />
       </div>
 
-      {/* 送信先メールアドレスの入力欄 */}
       <div style={{ marginBottom: 12 }}>
         <label>
-          <strong>送信先:</strong>
+          <strong>送信先</strong>
         </label>
         <input
           value={mailaddress}
           onChange={(e) => setMailaddress(e.target.value)}
-          style={{ width: "100%", padding: 8, marginTop: 4 }}
+          style={{ width: "100%", padding: 8 }}
         />
       </div>
 
@@ -93,13 +102,19 @@ export default function UnsentMail({ item }: { item: any }) {
         rows={20}
         style={{ width: "100%" }}
       />
-      <a href={`/api/preview-pdf?id=${item.id}`} target="_blank" rel="noopener noreferrer">
+
+      <a
+        href={`/api/preview-pdf?id=${item.id}`}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         <button type="button">PDFプレビュー</button>
       </a>
 
       <button onClick={handleUpdate} style={{ marginLeft: 8 }}>
         内容を更新
       </button>
+
       <button onClick={handleSend} style={{ marginLeft: 8 }}>
         メール送信
       </button>
